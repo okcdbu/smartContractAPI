@@ -1,0 +1,70 @@
+{
+  "name": "dashboard",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "@octokit/rest": "^18.12.0",
+    "@testing-library/jest-dom": "^5.16.5",
+    "@testing-library/react": "^13.1.1",
+    "@testing-library/user-event": "^13.5.0",
+    "@types/jest": "^27.4.1",
+    "@types/node": "^16.11.49",
+    "@types/react": "^18.0.17",
+    "@types/react-dom": "^18.0.6",
+    "@types/react-syntax-highlighter": "^15.5.4",
+    "@types/shelljs": "^0.8.11",
+    "file-saver": "^2.0.5",
+    "git-clone": "^0.2.0",
+    "luxon": "^2.5.0",
+    "octokit": "^1.7.1",
+    "os-browserify": "^0.3.0",
+    "path-browserify": "^1.0.1",
+    "prop-types": "^15.8.1",
+    "ra-data-fakerest": "^4.2.7",
+    "ra-input-rich-text": "^4.2.7",
+    "react": "^18.1.0",
+    "react-admin": "^4.2.7",
+    "react-diff-viewer": "^3.1.1",
+    "react-dom": "^18.1.0",
+    "react-hook-form": "^7.34.2",
+    "react-json-view": "^1.21.3",
+    "react-scripts": "5.0.1",
+    "react-syntax-highlighter": "^15.5.0",
+    "shelljs": "^0.8.5",
+    "typescript": "^4.6.4",
+    "web-vitals": "^2.1.4"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject"
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "devDependencies": {
+    "@types/file-saver": "^2.0.5",
+    "@types/git-clone": "^0.2.0",
+    "@types/luxon": "^2.4.0"
+  },
+  "browser": {
+    "fs": false,
+    "path": false
+  }
+}
