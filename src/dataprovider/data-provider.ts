@@ -58,7 +58,7 @@ export const dataProvider = {
             method: 'POST',
             body: JSON.stringify(params.data),
         }).then(({json}) => ({
-            data: {...params.data, id: json.id},
+            data: {...params.data, id: json.id },
         })),
 
     update: (resource: any, params: any) =>

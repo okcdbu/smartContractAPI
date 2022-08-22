@@ -113,7 +113,6 @@ const execTransaction=()=> {
 
 const AssetView = (props: any) => {
     const {open, onClose} = props;
-    console.log(open,onClose);
     return (
         <div>
             <Dialog open={open} onClose={onClose} maxWidth={"md"}>
@@ -159,8 +158,7 @@ const installSC = (source: any) => {
      * Language
      */
 
-    console.log(source["cc_languages"][0].language)
-
+    console.log(source)
     const myHeaders = new Headers();
     myHeaders.append("Content-Type", "application/json");
 

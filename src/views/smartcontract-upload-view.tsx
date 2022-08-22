@@ -8,20 +8,21 @@ import {
     Toolbar,
     useNotify,
 } from 'react-admin';
-import React from 'react';
+import React, {useState} from 'react';
 import {useNavigate} from 'react-router-dom';
 
 export const SCUploadView = (props: any) => {
-    // const strip = (html: string) => {
-    //     let doc = new DOMParser().parseFromString(html, 'text/html');
-    //     return doc.body.textContent || "";
-    // }
-
+    const [value,setValue] = useState('')
+    const handleChange = ({e}: { e: any }) => {
+        e.target.value.replace(/[^0-9]/g, '')
+        console.log(e.target.value)
+        setValue(e.target.value)
+    }
     return (
         <Create {...props}>
             <SimpleForm toolbar={<FileUploadToolbar/>}>
+                <TextInput source="id" label={"ID"} onChange={(e) => handleChange({e: e})}/>
                 <TextInput source="name" label="Smart Contract Name" />
-                <TextInput source="id" style={{display:"none"}}/>
                 <TextInput source="uploaded" style={{display:"none"}}/>
                 <TextInput source={"author"} label={"Author"}/>
                 <TextInput source={"description"} label={"Description"}/>
@@ -31,10 +32,14 @@ export const SCUploadView = (props: any) => {
                     <SimpleFormIterator>
                         <TextInput source={"language"} label={"Language"}/>
                         <TextInput source={"link"} label={"Main Source Link"}/>
-                        <TextInput multiline={true} fullWidth={true} source={"asset_struct"}
-                        />
-                        <TextInput multiline={true} fullWidth={true} source={"dependencies"}
-                        />
+                        <TextInput source={"asset_struct.ID"}/>
+                        <TextInput source={"asset_struct.Color"}/>
+                        <TextInput source={"asset_struct.Size"}/>
+                        <TextInput multiline={true} fullWidth={true} source={"dependencies.fabric-contract-api"}/>
+                        <TextInput multiline={true} fullWidth={true} source={"dependencies.fabric-shim"}/>
+                        <TextInput multiline={true} fullWidth={true} source={"dependencies.json-stringify-deterministic"}/>
+                        <TextInput multiline={true} fullWidth={true} source={"dependencies.sort-keys-recursive"}/>
+                        {/*<TextInput multiline={true} fullWidth={true} source={"dependencies"}/>*/}
                     </SimpleFormIterator>
                 </ArrayInput>
                 <ArrayInput name={"App Languages"} source={"app_languages"}>
