@@ -1,27 +1,23 @@
 import {
     Create,
     SimpleForm,
-    TextInput,
+    NumberInput,
     ArrayInput,
     SaveButton,
     SimpleFormIterator,
     Toolbar,
     useNotify,
+    TextInput,
 } from 'react-admin';
 import React, {useState} from 'react';
 import {useNavigate} from 'react-router-dom';
+import {JsonInput} from "react-admin-json-view";
 
 export const SCUploadView = (props: any) => {
-    const [value,setValue] = useState('')
-    const handleChange = ({e}: { e: any }) => {
-        e.target.value.replace(/[^0-9]/g, '')
-        console.log(e.target.value)
-        setValue(e.target.value)
-    }
     return (
         <Create {...props}>
             <SimpleForm toolbar={<FileUploadToolbar/>}>
-                <TextInput source="id" label={"ID"} onChange={(e) => handleChange({e: e})}/>
+                <TextInput source="id" label={"ID"} />
                 <TextInput source="name" label="Smart Contract Name" />
                 <TextInput source="uploaded" style={{display:"none"}}/>
                 <TextInput source={"author"} label={"Author"}/>
@@ -32,14 +28,29 @@ export const SCUploadView = (props: any) => {
                     <SimpleFormIterator>
                         <TextInput source={"language"} label={"Language"}/>
                         <TextInput source={"link"} label={"Main Source Link"}/>
-                        <TextInput source={"asset_struct.ID"}/>
-                        <TextInput source={"asset_struct.Color"}/>
-                        <TextInput source={"asset_struct.Size"}/>
-                        <TextInput multiline={true} fullWidth={true} source={"dependencies.fabric-contract-api"}/>
-                        <TextInput multiline={true} fullWidth={true} source={"dependencies.fabric-shim"}/>
-                        <TextInput multiline={true} fullWidth={true} source={"dependencies.json-stringify-deterministic"}/>
-                        <TextInput multiline={true} fullWidth={true} source={"dependencies.sort-keys-recursive"}/>
-                        {/*<TextInput multiline={true} fullWidth={true} source={"dependencies"}/>*/}
+                        <JsonInput
+                            source="asset_struct"
+                            label={"asset_struct"}
+                            jsonString={false} // Set to true if the value is a string, default: false
+                            reactJsonOptions={{
+                                // Props passed to react-json-view
+                                name: null,
+                                collapsed: true,
+                                enableClipboard: true,
+                                displayDataTypes: true,
+                            }}
+                        />
+                        <JsonInput
+                            source="dependencies"
+                            jsonString={false} // Set to true if the value is a string, default: false
+                            reactJsonOptions={{
+                                // Props passed to react-json-view
+                                name: null,
+                                collapsed: true,
+                                enableClipboard: true,
+                                displayDataTypes: true,
+                            }}
+                        />
                     </SimpleFormIterator>
                 </ArrayInput>
                 <ArrayInput name={"App Languages"} source={"app_languages"}>
@@ -74,7 +85,6 @@ const FileUploadToolbar = () => {
                 type="button"
                 variant="text"
             />
-
         </Toolbar>
     )
 }

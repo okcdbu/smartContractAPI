@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@bb-tech/ra-components": "^2.0.0",
     "@octokit/rest": "^18.12.0",
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^13.1.1",
@@ -24,6 +25,7 @@
     "ra-input-rich-text": "^4.2.7",
     "react": "^18.1.0",
     "react-admin": "^4.2.7",
+    "react-admin-json-view": "^2.0.0",
     "react-diff-viewer": "^3.1.1",
     "react-dom": "^18.1.0",
     "react-hook-form": "^7.34.2",
