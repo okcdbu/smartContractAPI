@@ -10,12 +10,12 @@ import {
     TextInput,
     Edit,
     SimpleForm,
-    Datagrid, useShowController
+    Datagrid, useShowController, getSimpleValidationResolver
 } from 'react-admin'
 import CustomTimeField from "../fields/custom-time-field";
 import JsonField from "../fields/json-field";
 import {Grid, Stack, Button, Divider,TableCell,TableRow,Checkbox} from '@mui/material'
-import React, {useState} from "react";
+import React, {useEffect,useState} from "react";
 import FileSaver from "file-saver";
 import DropdownMenu from "./dropdown-menu";
 import TransactionDialogView from "./transaction-dialog-view";
@@ -25,6 +25,7 @@ import DialogTitle from "@mui/material/DialogTitle";
 import DialogContent from "@mui/material/DialogContent";
 import DiffView from "./diff-view";
 import DialogActions from "@mui/material/DialogActions";
+import ReactJson from 'react-json-view'
 
 const DetailsView = (props: any) => {
     const [dialogIsOpen, setDialogIsOpen] = useState(false);
@@ -33,9 +34,15 @@ const DetailsView = (props: any) => {
     const propsDialog = {open: dialogIsOpen,onClose : closeDialog };
     const {record} = useShowController();
     const [currCode, setCodeView] = useState(0);
+    const [assets , setAssets] = useState([]);
+    useEffect(() => {
+        fetchAssets().then((data) => {
+            setAssets(data)
+            console.log(assets)
+        })
+    }, [])
     const changeCodeView = (val: number) => setCodeView(val);
     let codeViewMenu = []
-
     for (const language of record["cc_languages"]) {
         codeViewMenu.push(language.language);
     }
@@ -66,7 +73,10 @@ const DetailsView = (props: any) => {
                                     menuCallbackAction={changeCodeView}/>
                             </div>
                         </Stack>
-                        <AssetView open={dialogIsOpen}
+                        <AssetView
+                            assets = {assets}
+                            record ={record}
+                            open={dialogIsOpen}
                                    onClose={closeDialog}/>
                         <CodeView source={record.cc_languages[currCode]}/>
                     </Stack>
@@ -95,7 +105,7 @@ const DetailsView = (props: any) => {
                             </SingleFieldList>
                         </ArrayField>
                         <Divider light/>
-                        <TransactionDialogButton></TransactionDialogButton>
+                        <TransactionDialogButton record = {record}></TransactionDialogButton>
                         <Button variant={"contained"} onClick={downloadSC}>Download Smart Contract</Button>
                         <Button variant={"contained"}
                                 onClick={() => installSC(record)}>Install
@@ -107,14 +117,13 @@ const DetailsView = (props: any) => {
         </Show>
     )
 };
-const execTransaction=()=> {
-    console.log("transaction");
-}
 
 const AssetView = (props: any) => {
-    const {open, onClose} = props;
+    const {assets,record,open, onClose} = props;
+    console.log("asset : " , assets)
+    
     return (
-        <div>
+        <Show {...props}>
             <Dialog open={open} onClose={onClose} maxWidth={"md"}>
                 <DialogTitle>Asset View</DialogTitle>
                 <DialogContent>
@@ -126,21 +135,39 @@ const AssetView = (props: any) => {
                             <JsonField source="dependencies" name={null}/> //old owner
                         </Datagrid>
                     </ArrayField>
-                   <Edit >
-                       <SimpleForm onSubmit={execTransaction}>
-                           <TextInput  fullWidth={true} source="assetID" label={"assetID"}/>
-                           <TextInput  fullWidth={true} source="New Owner" label={"NewOwner"}/>
-                       </SimpleForm>
-                   </Edit>
-
+                    {assets.map((asset : any) => {
+                        return  <ReactJson name={asset.ID} src={asset} displayDataTypes={false} enableClipboard={false} 
+                        style={{margin: 10, border: "3px solid black", borderRadius: 10, padding:15}}/>
+                    })}
+                   {/* <JsonField source="assets" src={assets} name = {null}></JsonField> */}
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={onClose}>Close</Button>
                 </DialogActions>
             </Dialog>
-        </div>
+        </Show>
     )
 };
+// const queryingChains = (props : any) => {
+//     const assets = fetchAssets()
+//     const {records} = props;
+//     const [dialogIsOpen, setDialogIsOpen] = useState(false);
+//     const openDialog = () => {setDialogIsOpen(true);}
+//     const closeDialog = () => setDialogIsOpen(false);
+
+//     const value = fetchAssets()
+
+//     return (
+//         <div>
+//             <Button variant={"contained"} onClick={openDialog}>Use SC for Transaction</Button>
+//             <TransactionDialogView 
+//                 record = {record}
+//                 open={dialogIsOpen}
+//                 onClose={closeDialog}
+//                 jsonSrc={jsonSrc}/>
+//         </div>
+//     )
+// }
 
 const downloadSC = () => {
     console.log("Downloading Smart Contract.")
@@ -181,7 +208,8 @@ const installSC = (source: any) => {
         .catch(error => console.log('error', error));
 };
 
-const TransactionDialogButton = () => {
+const TransactionDialogButton = (props : any) => {
+    const {record} = props;
     const [dialogIsOpen, setDialogIsOpen] = useState(false);
     const openDialog = () => {setDialogIsOpen(true);}
     const closeDialog = () => setDialogIsOpen(false);
@@ -192,29 +220,36 @@ const TransactionDialogButton = () => {
         "sort-keys-recursive": "^2.1.2"
     }
 
-    const value = fetchAssets()
-
     return (
         <div>
             <Button variant={"contained"} onClick={openDialog}>Use SC for Transaction</Button>
-            <TransactionDialogView open={dialogIsOpen}
-                                   onClose={closeDialog}
-                                   jsonSrc={jsonSrc}/>
+            <TransactionDialogView 
+                record = {record}
+                open={dialogIsOpen}
+                onClose={closeDialog}
+                jsonSrc={jsonSrc}/>
         </div>
     )
 };
 
-const fetchAssets = () => {
+const fetchAssets = async () => {
     var requestOptions: RequestInit = {
         method: 'GET',
         redirect: 'follow'
     };
-
+    let res = new Object();
     let data = fetch("http://localhost:8080/fabric/dashboard/smart-contracts/asset", requestOptions)
-        .then(response => response.text())
-        .then(result =>{ return result})
-        .catch(error => console.log('error', error));
-    console.log(data)
+        .then(response => response.json())
+        .then(result =>{ 
+            //console.log("result")
+            result = JSON.parse(result)
+            res = result
+            console.log(result)
+            console.log(res)
+            return result
+            })
+        .catch(error => console.log('error11', error));
+    return data
 }
 
 export default DetailsView;

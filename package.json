@@ -3,7 +3,6 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@bb-tech/ra-components": "^2.0.0",
     "@octokit/rest": "^18.12.0",
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^13.1.1",
@@ -40,7 +39,9 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "postinstall": "patch-package",
+    "prepare" : "patch-package"
   },
   "eslintConfig": {
     "extends": [

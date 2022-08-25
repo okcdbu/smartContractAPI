@@ -1,0 +1,13 @@
+diff --git a/node_modules/ra-ui-materialui/src/form/SimpleForm.tsx b/node_modules/ra-ui-materialui/src/form/SimpleForm.tsx
+index 3dc0e83..1b5c11f 100644
+--- a/node_modules/ra-ui-materialui/src/form/SimpleForm.tsx
++++ b/node_modules/ra-ui-materialui/src/form/SimpleForm.tsx
+@@ -74,7 +74,7 @@ SimpleForm.propTypes = {
+ export interface SimpleFormProps
+     extends Omit<FormProps, 'render'>,
+         Omit<StackProps, 'onSubmit'> {
+-    children: ReactNode;
++    children: ReactNode[]|ReactNode|JSX.Element|JSX.Element[];
+     className?: string;
+     component?: React.ComponentType<any>;
+     defaultValues?: any;
