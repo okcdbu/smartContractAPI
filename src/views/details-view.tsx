@@ -10,7 +10,7 @@ import {
     TextInput,
     Edit,
     SimpleForm,
-    Datagrid, useShowController, getSimpleValidationResolver
+    Datagrid, useShowController, getSimpleValidationResolver, SelectInput
 } from 'react-admin'
 import CustomTimeField from "../fields/custom-time-field";
 import JsonField from "../fields/json-field";
@@ -35,12 +35,12 @@ const DetailsView = (props: any) => {
     const {record} = useShowController();
     const [currCode, setCodeView] = useState(0);
     const [assets , setAssets] = useState([]);
+    const [installed,setInstalled] = useState(false)
     useEffect(() => {
         fetchAssets().then((data) => {
             setAssets(data)
-            console.log(assets)
         })
-    }, [])
+    }, [dialogIsOpen])
     const changeCodeView = (val: number) => setCodeView(val);
     let codeViewMenu = []
     for (const language of record["cc_languages"]) {
@@ -73,11 +73,11 @@ const DetailsView = (props: any) => {
                                     menuCallbackAction={changeCodeView}/>
                             </div>
                         </Stack>
-                        <AssetView
+                        {/* <AssetView
                             assets = {assets}
                             record ={record}
                             open={dialogIsOpen}
-                                   onClose={closeDialog}/>
+                                   onClose={closeDialog}/> */}
                         <CodeView source={record.cc_languages[currCode]}/>
                     </Stack>
                 </Grid>
@@ -105,8 +105,8 @@ const DetailsView = (props: any) => {
                             </SingleFieldList>
                         </ArrayField>
                         <Divider light/>
-                        <TransactionDialogButton record = {record}></TransactionDialogButton>
-                        <Button variant={"contained"} onClick={downloadSC}>Download Smart Contract</Button>
+                        <TransactionDialogButton assets={assets} setAssets={setAssets} record = {record}></TransactionDialogButton>
+                        <Button variant={"contained"} onClick={downloadSC} name={record.name}>Download Smart Contract</Button>
                         <Button variant={"contained"}
                                 onClick={() => installSC(record)}>Install
                             Smart Contract</Button>
@@ -120,7 +120,6 @@ const DetailsView = (props: any) => {
 
 const AssetView = (props: any) => {
     const {assets,record,open, onClose} = props;
-    console.log("asset : " , assets)
     
     return (
         <Show {...props}>
@@ -169,9 +168,32 @@ const AssetView = (props: any) => {
 //     )
 // }
 
-const downloadSC = () => {
+const downloadSC = (e : any) => {
+    const name = e.target.getAttribute('name')
     console.log("Downloading Smart Contract.")
-    FileSaver.saveAs("https://cors-anywhere.herokuapp.com/api.github.com/repos/arogyaGurkha/GurkhaContracts/tarball/main", "CC.tar.gz")
+    // const myHeaders = new Headers();
+    // const requestOptions: RequestInit = {
+    //     method: 'POST',
+    //     headers: myHeaders,
+    //     body: raw,
+    //     redirect: 'follow'
+    // };
+    fetch(`http://localhost:8080/fabric/dashboard/downloadCC?name=${name}`,{method: 'GET'})
+        .then(response => response.blob())
+        .then(blob => {
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `${name}.tar.gz`;
+            document.body.appendChild(a);
+            a.click();
+            setTimeout((_ : any) => {
+                window.URL.revokeObjectURL(url);
+            }, 60000);
+            a.remove();
+        })
+        .catch(error => console.log('error', error));
+    // FileSaver.saveAs("https://cors-anywhere.herokuapp.com/api.github.com/repos/arogyaGurkha/GurkhaContracts/tarball/main", "CC.tar.gz")
 };
 
 
@@ -209,25 +231,20 @@ const installSC = (source: any) => {
 };
 
 const TransactionDialogButton = (props : any) => {
-    const {record} = props;
+    const {record,assets,setAssets} = props;
     const [dialogIsOpen, setDialogIsOpen] = useState(false);
     const openDialog = () => {setDialogIsOpen(true);}
     const closeDialog = () => setDialogIsOpen(false);
-    const jsonSrc = {
-        "fabric-contract-api": "^2.0.0",
-        "fabric-shim": "^2.0.0",
-        "json-stringify-deterministic": "^1.0.1",
-        "sort-keys-recursive": "^2.1.2"
-    }
 
     return (
         <div>
             <Button variant={"contained"} onClick={openDialog}>Use SC for Transaction</Button>
             <TransactionDialogView 
+                assets = {assets}
+                setAssets = {setAssets}
                 record = {record}
                 open={dialogIsOpen}
-                onClose={closeDialog}
-                jsonSrc={jsonSrc}/>
+                onClose={closeDialog}/>
         </div>
     )
 };
@@ -242,10 +259,7 @@ const fetchAssets = async () => {
         .then(response => response.json())
         .then(result =>{ 
             //console.log("result")
-            result = JSON.parse(result)
-            res = result
-            console.log(result)
-            console.log(res)
+     
             return result
             })
         .catch(error => console.log('error11', error));

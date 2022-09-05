@@ -1,9 +1,12 @@
-import {fetchUtils} from 'react-admin';
+import {fetchUtils,HttpError} from 'react-admin';
 import {stringify} from 'query-string';
+import { isTemplateExpression } from 'typescript';
+import { blob } from 'stream/consumers';
 
 const apiUrl = 'http://localhost:8080/fabric/dashboard';
 const httpClient = fetchUtils.fetchJson;
 
+// @ts-ignore
 export const dataProvider = {
     getList: (resource: any, params: any) => {
         const {page, perPage} = params.pagination;
@@ -53,17 +56,61 @@ export const dataProvider = {
         }));
     },
 
-    create: (resource: any, params: any) =>
+    // create: (resource: any, params: any) =>
+    //     httpClient(`${apiUrl}/${resource}`, {
+    //         method: 'POST',
+    //         body: JSON.stringify(params.data),
+    //     }).then(({json}) => ({
+    //         data: {...params.data, id: String(json.id)},
+    //     })),
+    create: (resource : any, params : any) : any => {
+        if (resource !== 'smart-contracts') {
+            httpClient(`${apiUrl}/${resource}`, {
+                method: 'POST',
+                body: JSON.stringify(params.data),
+            }).then(({json}) => ({
+                data: {...params.data, id: String(json.id)},
+            }))
+        }
+        else {
+            let file = params.data.chaincodes
+            delete params.data.chaincodes
+            
+            // no package file
+            if (file == null) {
+                console.log("file is null")
+                var ans = httpClient(`${apiUrl}/${resource}`, {
+                    method: 'POST',
+                    body: JSON.stringify(params.data),
+                }).then(({json}) => ({
+                    data: {...params.data, id: String(json.id)},
+                }))
+                return ans
+            }
+            // exist package file
+            else {
+                console.log(params.data)
+                console.log("file:", file)
+                console.log("rawfile: ", file.rawFile)
+                
+            
+                let formData = new FormData();
+                formData.append('file',file.rawFile)
+                formData.append('data',JSON.stringify(params.data))
+                var ans = httpClient(`${apiUrl}/${resource}/file`, {
+                    method: 'POST',
+                    body:formData,
+                }).then(({json}) => ({
+                    data: {...params.data, id: String(json.id)},
+                }))
+                return ans
+            }
+        }
+       
+    },
+    update: (resource: any, params: any) =>
         httpClient(`${apiUrl}/${resource}`, {
             method: 'POST',
-            body: JSON.stringify(params.data),
-        }).then(({json}) => ({
-            data: {...params.data, id: String(json.id)},
-        })),
-
-    update: (resource: any, params: any) =>
-        httpClient(`${apiUrl}/${resource}/${params.id}`, {
-            method: 'PUT',
             body: JSON.stringify(params.data),
         }).then(({json}) => ({data: json})),
 

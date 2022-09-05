@@ -8,17 +8,16 @@ import ReactJson from "react-json-view";
 import TransactionView from "./transaction-view";
 
 const TransactionDialogView = (props: any) => {
-    const {record, open, onClose, jsonSrc} = props;
+    const {setAssets,record, open, onClose} = props;
     const assetStruct = record.cc_languages[0].asset_struct  
-    console.log(assetStruct)
 
     return (
         <div>
             <Dialog open={open} onClose={onClose} maxWidth={"md"}>
                 <DialogTitle >Create New Transaction</DialogTitle>
                 <DialogContent>
-                    <ReactJson src={jsonSrc} displayDataTypes={false}/>
-                    <TransactionView onClose={onClose} assetStruct={assetStruct}/>
+                    <ReactJson src={assetStruct} displayDataTypes={false}/>
+                    <TransactionView setAssets={setAssets} onClose={onClose} assetStruct={assetStruct}/>
                 </DialogContent>
                 <DialogActions>
                     <Button  onClick={onClose}>Close</Button>

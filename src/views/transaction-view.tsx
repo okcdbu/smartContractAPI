@@ -1,6 +1,7 @@
 import {Create, TextInput, SimpleForm, useNotify, Toolbar, SaveButton, useCreate} from "react-admin";
 import Button from '@mui/material/Button';
 import React from "react";
+import {SelectInput} from 'react-admin';
 import {useNavigate} from "react-router-dom";
 import ReceiptLongIcon from '@mui/icons-material/ReceiptLong';
 import {useWatch} from "react-hook-form";
@@ -9,12 +10,16 @@ import { JsonField } from "react-admin-json-view";
 import { json } from "stream/consumers";
 
 const TransactionView = (props: any) => {
-    const {assetStruct, onClose} = props
+    const {setAssets,assetStruct, onClose} = props
     JSON.stringify(assetStruct)
-    console.log("string"+assetStruct)
     return (
         <Create {...props}>
-            <SimpleForm toolbar={<StartTransactionToolBar onClose={onClose}/>}>
+            <SimpleForm toolbar={<StartTransactionToolBar setAssets={setAssets} onClose={onClose}/>}>
+                <SelectInput source="function" choices={[
+                            {id:"CreateAsset", name: "CreateAsset"},
+                            {id:"UpdateAsset", name: "UpdateAsset"},
+                            {id:"TransferAsset", name: "TransferAsset"}
+                        ]}/>
                 <TextInput source="id" style={{display:"none"}}/>
                 <TextInput source="asset_id" label="Asset ID"/>
                 <TextInput source="new_owner" label="New Owner"/>
@@ -28,14 +33,28 @@ const TransactionView = (props: any) => {
 };
 
 const StartTransactionToolBar = (props: any) => {
-    const {onClose} = props
+    const {assets, setAssets,onClose} = props
     const [create, {isLoading, error}] = useCreate();
     const transactionData = {
+        function: useWatch({name: 'function'}),
         asset_id: useWatch({name: 'asset_id'}),
-        new_owner: useWatch({name: 'new_owner'})
+        new_owner: useWatch({name: 'new_owner'}),
+        new_address: useWatch({name: 'new_address'}),
+        new_size: useWatch({name: 'new_size'}),
+        new_salevalue: useWatch({name: 'new_salevalue'}),
+        new_rentvalue: useWatch({name: 'new_rentvalue'}),
     }
     const handleClick = () => {
+        var requestOptions: RequestInit = {
+            method: 'POST',
+            headers : {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(transactionData),
+        };
+        let res = new Object();
         create('smart-contracts/transaction', {data: transactionData})
+        
         onClose()
     }
     return (

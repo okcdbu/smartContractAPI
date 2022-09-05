@@ -8,12 +8,22 @@ import {
     Toolbar,
     useNotify,
     TextInput,
+    FileInput,
+    FileField,
 } from 'react-admin';
-import React, {useState} from 'react';
+import React, {createRef, useCallback, useRef, useState} from 'react';
 import {useNavigate} from 'react-router-dom';
 import {JsonInput} from "react-admin-json-view";
+import {Button} from "@mui/material";
+import {useDropzone} from "react-dropzone";
+import Dropzone from "react-dropzone";
+
 
 export const SCUploadView = (props: any) => {
+    const [fileNames, setFileNames] = useState([]);
+    const handleDrop = (acceptedFiles : any) =>
+        setFileNames(acceptedFiles.map((file:any) => file.name));
+
     return (
         <Create {...props}>
             <SimpleForm toolbar={<FileUploadToolbar/>}>
@@ -53,6 +63,19 @@ export const SCUploadView = (props: any) => {
                         />
                     </SimpleFormIterator>
                 </ArrayInput>
+                <FileInput source="chaincodes" label="chaincodes" accept="application/gzip, .gz">
+                    <FileField source="src" title="title" />            
+                </FileInput>
+                
+
+                <div>
+                    <strong>Files:</strong>
+                    <ul>
+                        {fileNames.map(fileName => (
+                            <li key={fileName}>{fileName}</li>
+                        ))}
+                    </ul>
+                </div>
                 <ArrayInput name={"App Languages"} source={"app_languages"}>
                     <SimpleFormIterator>
                         <TextInput source={"language"} label={"Language"}/>
@@ -88,4 +111,3 @@ const FileUploadToolbar = () => {
         </Toolbar>
     )
 }
-
