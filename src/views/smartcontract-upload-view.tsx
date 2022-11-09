@@ -9,7 +9,7 @@ import {
     useNotify,
     TextInput,
     FileInput,
-    FileField,
+    FileField, required,
 } from 'react-admin';
 import React, {createRef, useCallback, useRef, useState} from 'react';
 import {useNavigate} from 'react-router-dom';
@@ -28,7 +28,7 @@ export const SCUploadView = (props: any) => {
         <Create {...props}>
             <SimpleForm toolbar={<FileUploadToolbar/>}>
                 <TextInput source="id" label={"ID"} />
-                <TextInput source="name" label="Smart Contract Name" />
+                <TextInput source="name" label="Smart Contract Name" validate={[required()]} />
                 <TextInput source="uploaded" style={{display:"none"}}/>
                 <TextInput source={"author"} label={"Author"}/>
                 <TextInput source={"description"} label={"Description"}/>
