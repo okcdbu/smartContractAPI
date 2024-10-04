@@ -8,7 +8,7 @@ const AdminView = () => (
 )
 
 const addOrg= () => {
-    fetch(`http://${window.location.origin}:8080/fabric/admin/addorg`)
+    fetch(`http://${window.location.hostname}:8080/fabric/admin/addorg`)
         .then((response)=> response.json())
         .then((data)=>console.log(data))
         .catch(error => console.log('error',error))

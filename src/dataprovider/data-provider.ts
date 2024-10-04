@@ -3,7 +3,7 @@ import {stringify} from 'query-string';
 import { isTemplateExpression } from 'typescript';
 import { blob } from 'stream/consumers';
 
-const apiUrl = `http://${window.location.origin}:8080/fabric/dashboard`;
+const apiUrl = `http://${window.location.hostname}:8080/fabric/dashboard`;
 const httpClient = fetchUtils.fetchJson;
 
 // @ts-ignore

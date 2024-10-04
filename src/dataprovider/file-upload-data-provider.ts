@@ -54,7 +54,7 @@ function uploadFileAndSave(resource : any, params : any, func : any) {
         let formData = new FormData();
         formData.append("file", file.rawFile)
 
-        return fetch(`http://${window.location.origin}:8080/fabric/dashboard/` + resource , {
+        return fetch(`http://${window.location.hostname}:8080/fabric/dashboard/` + resource , {
             method: 'POST',
             body: formData
         }).then(() => result)
