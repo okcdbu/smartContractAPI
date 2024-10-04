@@ -224,7 +224,7 @@ const installSC = (source: any) => {
         redirect: 'follow'
     };
 
-    fetch("http://${window.location.origin}:8080/fabric/dashboard/deployCC", requestOptions)
+    fetch(`http://${window.location.origin}:8080/fabric/dashboard/deployCC`, requestOptions)
         .then(response => response.text())
         .then(result => console.log(result))
         .catch(error => console.log('error', error));
@@ -255,7 +255,7 @@ const fetchAssets = async () => {
         redirect: 'follow'
     };
     let res = new Object();
-    let data = fetch("http://${window.location.origin}:8080/fabric/dashboard/smart-contracts/asset", requestOptions)
+    let data = fetch(`http://${window.location.origin}:8080/fabric/dashboard/smart-contracts/asset`, requestOptions)
         .then(response => response.json())
         .then(result =>{ 
             //console.log("result")
